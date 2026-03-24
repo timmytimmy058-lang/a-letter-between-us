@@ -131,26 +131,12 @@
         .btn-primary {
             background: linear-gradient(135deg, #d4a574 0%, #b8a9c9 100%);
             transition: all 0.3s ease;
+            cursor: pointer;
         }
         
-        .btn-primary:hover:not(:disabled) {
+        .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(212, 165, 116, 0.3);
-        }
-        
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .word-counter {
-            transition: all 0.3s ease;
-        }
-        
-        .word-counter.valid {
-            color: #10b981;
-            font-weight: 600;
         }
         
         .letter-paper {
@@ -173,12 +159,6 @@
             background: #f3f4f6;
             border: 2px dashed #d1d5db;
             word-break: break-all;
-        }
-        
-        .btn-active {
-            opacity: 1 !important;
-            cursor: pointer !important;
-            transform: none !important;
         }
     </style>
 </head>
@@ -499,13 +479,13 @@
                     <div class="mt-8 text-center">
                         <button onclick="submitResponse()" 
                                 id="submit-btn"
-                                class="btn-primary text-white px-12 py-4 rounded-full text-lg font-medium btn-active">
+                                class="btn-primary text-white px-12 py-4 rounded-full text-lg font-medium">
                             Send Your Letter 💌
                         </button>
                     </div>
                     
                     <div class="mt-4 text-center">
-                        <button onclick="state.currentScreen = 'question'; state.currentQuestion = questions.length - 1; render();" 
+                        <button onclick="goBackToQuestions()" 
                                 class="text-gray-400 hover:text-gray-600 text-sm">
                             ← Go back to questions
                         </button>
@@ -688,7 +668,6 @@
 
         function countWords(text) {
             if (!text || !text.trim()) return 0;
-            // Split by whitespace and filter out empty strings
             return text.trim().split(/\s+/).filter(word => word.length > 0).length;
         }
 
@@ -737,6 +716,12 @@
                 state.currentQuestion--;
                 render();
             }
+        }
+
+        function goBackToQuestions() {
+            state.currentScreen = 'question';
+            state.currentQuestion = questions.length - 1;
+            render();
         }
 
         function handleReflectionInput(value) {
