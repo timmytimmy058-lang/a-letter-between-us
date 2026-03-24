@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Letter Between Us 💭</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #faf7f2 0%, #f5f0e8 50%, #ede8f0 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #d4a574 0%, #b8a9c9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .slide-up {
+            animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .option-card.selected {
+            background: linear-gradient(135deg, #d4a574 0%, #b8a9c9 100%);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #d4a574 0%, #b8a9c9 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .textarea-glow:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2);
+        }
+        
+        .heart-beat {
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .blur-bg {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .blur-1 {
+            background: #d4a574;
+            top: -200px;
+            left: -200px;
+        }
+        
+        .blur-2 {
+            background: #b8a9c9;
+            bottom: -200px;
+            right: -200px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #d4a574 0%, #b8a9c9 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 165, 116, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .word-counter {
+            transition: all 0.3s ease;
+        }
+        
+        .word-counter.valid {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .letter-paper {
+            background: linear-gradient(to bottom, #fffefb 0%, #faf8f3 100%);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            position: relative;
+        }
+        
+        .letter-paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #d4a574 0%, #b8a9c9 100%);
+        }
+        
+        .link-box {
+            background: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            word-break: break-all;
+        }
+        
+        .btn-active {
+            opacity: 1 !important;
+            cursor: pointer !important;
+            transform: none !important;
+        }
+    </style>
+</head>
+<body class="text-gray-700">
+    <!-- Background Elements -->
+    <div class="blur-bg blur-1"></div>
+    <div class="blur-bg blur-2"></div>
+    
+    <div id="app" class="min-h-screen flex items-center justify-center p-4">
+        <!-- Content injected by JavaScript -->
+    </div>
+
+    <script>
+        // Simple XOR encryption for URL-safe encoding
+        const Crypto = {
+            key: 'eyinimo-secret-key-2024',
+            
+            encrypt: function(text) {
+                let result = '';
+                for (let i = 0; i < text.length; i++) {
+                    const charCode = text.charCodeAt(i) ^ this.key.charCodeAt(i % this.key.length);
+                    result += String.fromCharCode(charCode);
+                }
+                return btoa(result).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+            },
+            
+            decrypt: function(encrypted) {
+                try {
+                    let base64 = encrypted.replace(/-/g, '+').replace(/_/g, '/');
+                    while (base64.length % 4) base64 += '=';
+                    const text = atob(base64);
+                    let result = '';
+                    for (let i = 0; i < text.length; i++) {
+                        const charCode = text.charCodeAt(i) ^ this.key.charCodeAt(i % this.key.length);
+                        result += String.fromCharCode(charCode);
+                    }
+                    return result;
+                } catch (e) {
+                    return null;
+                }
+            }
+        };
+
+        // Application State
+        const state = {
+            currentScreen: 'welcome',
+            currentQuestion: 0,
+            answers: {},
+            finalReflection: '',
+            viewPassword: 'eyinimo2024',
+            isViewingResponse: false
+        };
+
+        // Questions Data
+        const questions = [
+            {
+                section: "Looking Back",
+                text: "When you think about us, what's the first thing that comes to your mind?",
+                type: "text",
+                required: true
+            },
+            {
+                section: "Looking Back",
+                text: "Did you ever feel like what we had was becoming something serious?",
+                type: "choice",
+                options: ["Yes", "No", "Maybe", "Sometimes"]
+            },
+            {
+                section: "Looking Back",
+                text: "At any point, did you want us to be more than we were?",
+                type: "choice",
+                options: ["Yes", "No", "I wasn't sure", "I was scared to want that"]
+            },
+            {
+                section: "What Was Unsaid",
+                text: "Was there anything you felt but never told me?",
+                type: "text",
+                required: true
+            },
+            {
+                section: "What Was Unsaid",
+                text: "Do you think timing played a role in why things didn't work?",
+                type: "choice",
+                options: ["Definitely", "Somewhat", "Not really", "It was more than timing"]
+            },
+            {
+                section: "What Was Unsaid",
+                text: "Were there moments you wished I acted differently?",
+                type: "text",
+                required: false
+            },
+            {
+                section: "What Happened",
+                text: "Why do you think we never fully became a relationship?",
+                type: "text",
+                required: true
+            },
+            {
+                section: "What Happened",
+                text: "Do you feel like we left things unfinished between us?",
+                type: "choice",
+                options: ["Yes, definitely", "Somewhat", "No, we ended naturally", "I'm not sure"]
+            },
+            {
+                section: "What Happened",
+                text: "Did things ending or drifting apart affect you in any way?",
+                type: "text",
+                required: true
+            },
+            {
+                section: "What Still Exists",
+                text: "Do you still feel any emotional connection to me?",
+                type: "choice",
+                options: ["Yes, strongly", "Sometimes", "Rarely", "No, I've moved on"]
+            },
+            {
+                section: "What Still Exists",
+                text: "Do you ever miss what we had, even a little?",
+                type: "choice",
+                options: ["Often", "Sometimes", "Rarely", "Never"]
+            },
+            {
+                section: "What Still Exists",
+                text: "If things were different, do you think we could have worked?",
+                type: "choice",
+                options: ["Yes, absolutely", "Maybe", "Probably not", "I don't know"]
+            },
+            {
+                section: "Possibility",
+                text: "Do you think there's any chance for us in the future?",
+                type: "choice",
+                options: ["Yes, I believe so", "Maybe, if things change", "I don't know", "No, we've moved on"]
+            },
+            {
+                section: "Possibility",
+                text: "Would you be open to reconnecting in a deeper way someday?",
+                type: "choice",
+                options: ["Yes", "Maybe", "I need time", "No"]
+            }
+        ];
+
+        // Check URL on load
+        function checkUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const data = urlParams.get('data');
+            
+            if (data) {
+                const decrypted = Crypto.decrypt(decodeURIComponent(data));
+                if (decrypted) {
+                    try {
+                        const parsed = JSON.parse(decrypted);
+                        state.isViewingResponse = true;
+                        renderPasswordGate(document.getElementById('app'), parsed);
+                        return true;
+                    } catch (e) {
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Render Functions
+        function render() {
+            const app = document.getElementById('app');
+            
+            if (state.isViewingResponse) return;
+            
+            switch(state.currentScreen) {
+                case 'welcome':
+                    renderWelcome(app);
+                    break;
+                case 'question':
+                    renderQuestion(app);
+                    break;
+                case 'reflection':
+                    renderReflection(app);
+                    break;
+                case 'complete':
+                    renderComplete(app);
+                    break;
+            }
+        }
+
+        function renderWelcome(container) {
+            container.innerHTML = `
+                <div class="max-w-2xl w-full text-center fade-in">
+                    <div class="mb-8 floating">
+                        <span class="text-6xl">💭</span>
+                    </div>
+                    
+                    <h1 class="serif text-5xl md:text-6xl mb-6 text-gray-800 leading-tight">
+                        Hi Eyinimofeoluwa <span class="gradient-text">💛</span>
+                    </h1>
+                    
+                    <div class="glass-card rounded-3xl p-8 md:p-12 mb-8">
+                        <p class="text-lg md:text-xl leading-relaxed text-gray-600 mb-8">
+                            I made this for you… not to pressure you,<br>
+                            just to understand what we never got to say.
+                        </p>
+                        
+                        <div class="space-y-4 text-sm text-gray-500">
+                            <p>14 questions • 5 sections • 1 final letter</p>
+                            <p>Take your time. Be honest. Be you.</p>
+                        </div>
+                    </div>
+                    
+                    <button onclick="startQuestions()" class="btn-primary text-white px-12 py-4 rounded-full text-lg font-medium tracking-wide">
+                        Start
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderQuestion(container) {
+            const q = questions[state.currentQuestion];
+            const progress = ((state.currentQuestion + 1) / questions.length) * 100;
+            const isFirstInSection = state.currentQuestion === 0 || 
+                questions[state.currentQuestion - 1].section !== q.section;
+            
+            container.innerHTML = `
+                <div class="max-w-3xl w-full slide-up">
+                    <div class="mb-8">
+                        <div class="flex justify-between text-sm text-gray-500 mb-2">
+                            <span>${q.section}</span>
+                            <span>Question ${state.currentQuestion + 1} of ${questions.length}</span>
+                        </div>
+                        <div class="h-1 bg-gray-200 rounded-full overflow-hidden">
+                            <div class="progress-bar h-full rounded-full" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                    
+                    ${isFirstInSection ? `
+                        <div class="mb-6 text-center">
+                            <span class="text-xs uppercase tracking-widest text-gray-400">Section ${getSectionNumber(q.section)}</span>
+                            <h2 class="serif text-2xl text-gray-700 mt-1">${q.section}</h2>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="glass-card rounded-3xl p-8 md:p-12 mb-6">
+                        <h3 class="serif text-2xl md:text-3xl text-gray-800 mb-8 leading-relaxed">
+                            ${q.text}
+                        </h3>
+                        
+                        ${q.type === 'choice' ? `
+                            <div class="grid gap-3">
+                                ${q.options.map((opt) => `
+                                    <button onclick="selectOption('${opt}')" 
+                                            class="option-card w-full p-4 rounded-xl border border-gray-200 text-left text-gray-700 hover:border-gray-300 ${state.answers[state.currentQuestion] === opt ? 'selected' : 'bg-white/50'}">
+                                        <span class="flex items-center justify-between">
+                                            ${opt}
+                                            ${state.answers[state.currentQuestion] === opt ? '<span>✓</span>' : ''}
+                                        </span>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <textarea 
+                                id="text-answer"
+                                class="w-full p-4 rounded-xl border border-gray-200 bg-white/50 resize-none textarea-glow text-gray-700 leading-relaxed"
+                                rows="4"
+                                placeholder="Take your time to answer..."
+                                oninput="updateTextAnswer(this.value)"
+                            >${state.answers[state.currentQuestion] || ''}</textarea>
+                        `}
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <button onclick="previousQuestion()" 
+                                class="px-6 py-3 text-gray-500 hover:text-gray-700 transition-colors ${state.currentQuestion === 0 ? 'invisible' : ''}">
+                            ← Back
+                        </button>
+                        
+                        <button onclick="nextQuestion()" 
+                                id="next-btn"
+                                class="btn-primary text-white px-8 py-3 rounded-full font-medium ${!state.answers[state.currentQuestion] && q.required ? 'opacity-50 cursor-not-allowed' : ''}"
+                                ${!state.answers[state.currentQuestion] && q.required ? 'disabled' : ''}>
+                            ${state.currentQuestion === questions.length - 1 ? 'Continue to Reflection →' : 'Next →'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderReflection(container) {
+            container.innerHTML = `
+                <div class="max-w-3xl w-full slide-up">
+                    <div class="text-center mb-8">
+                        <span class="text-4xl mb-4 block">✨</span>
+                        <h2 class="serif text-3xl md:text-4xl text-gray-800 mb-2">Final Reflection</h2>
+                        <p class="text-gray-500">The most important part</p>
+                    </div>
+                    
+                    <div class="glass-card rounded-3xl p-8 md:p-12">
+                        <div class="letter-paper rounded-2xl p-6 md:p-8 mb-6">
+                            <p class="text-gray-600 mb-6 leading-relaxed italic">
+                                Take your time with this…<br><br>
+                                Tell me honestly:
+                            </p>
+                            
+                            <ul class="space-y-2 text-gray-600 mb-6 ml-4">
+                                <li>• How you feel about me now</li>
+                                <li>• What you liked about me</li>
+                                <li>• What you miss (if anything)</li>
+                                <li>• And what you think our future could or should be</li>
+                            </ul>
+                        </div>
+                        
+                        <textarea 
+                            id="final-reflection"
+                            class="w-full p-6 rounded-xl border border-gray-200 bg-white/80 resize-none textarea-glow text-gray-700 leading-relaxed text-lg"
+                            rows="12"
+                            placeholder="Dear...&#10;&#10;I want you to know that..."
+                            oninput="handleReflectionInput(this.value)"
+                        >${state.finalReflection}</textarea>
+                    </div>
+                    
+                    <div class="mt-8 text-center">
+                        <button onclick="submitResponse()" 
+                                id="submit-btn"
+                                class="btn-primary text-white px-12 py-4 rounded-full text-lg font-medium btn-active">
+                            Send Your Letter 💌
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button onclick="state.currentScreen = 'question'; state.currentQuestion = questions.length - 1; render();" 
+                                class="text-gray-400 hover:text-gray-600 text-sm">
+                            ← Go back to questions
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderComplete(container) {
+            const responseData = {
+                answers: state.answers,
+                finalReflection: state.finalReflection,
+                timestamp: new Date().toISOString()
+            };
+            
+            const encrypted = Crypto.encrypt(JSON.stringify(responseData));
+            const shareLink = `${window.location.origin}${window.location.pathname}?data=${encodeURIComponent(encrypted)}`;
+            
+            container.innerHTML = `
+                <div class="max-w-2xl w-full text-center slide-up">
+                    <div class="mb-8 heart-beat">
+                        <span class="text-6xl">💛</span>
+                    </div>
+                    
+                    <h2 class="serif text-4xl md:text-5xl text-gray-800 mb-6">
+                        Thank you for being honest with me
+                    </h2>
+                    
+                    <p class="text-xl text-gray-600 mb-8">
+                        This meant more than you know.
+                    </p>
+                    
+                    <div class="glass-card rounded-3xl p-8 mb-8 text-left">
+                        <h3 class="font-semibold text-gray-700 mb-4">Copy this link and send it to him:</h3>
+                        <div class="link-box rounded-lg p-4 mb-4 text-sm text-gray-600 font-mono max-h-32 overflow-y-auto">
+                            ${shareLink}
+                        </div>
+                        <button onclick="copyLink('${shareLink}')" class="w-full py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                            Copy Link
+                        </button>
+                        <p class="text-xs text-gray-500 mt-3 text-center">
+                            The link contains your encrypted answers. Only he can read them with the password.
+                        </p>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm">
+                        You can close this page now.
+                    </p>
+                </div>
+            `;
+        }
+
+        function renderPasswordGate(container, data) {
+            container.innerHTML = `
+                <div class="max-w-md w-full slide-up">
+                    <div class="text-center mb-8">
+                        <span class="text-4xl mb-4 block">🔒</span>
+                        <h2 class="serif text-3xl text-gray-800 mb-2">Private Response</h2>
+                        <p class="text-gray-500 text-sm">This content is protected</p>
+                    </div>
+                    
+                    <div class="glass-card rounded-3xl p-8">
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Enter Password</label>
+                            <input 
+                                type="password" 
+                                id="view-password"
+                                class="w-full p-4 rounded-xl border border-gray-200 bg-white/50 textarea-glow"
+                                placeholder="Password..."
+                                onkeypress="if(event.key === 'Enter') verifyPasswordAndShow(${JSON.stringify(data).replace(/"/g, '&quot;')})"
+                            >
+                        </div>
+                        
+                        <button onclick="verifyPasswordAndShow(${JSON.stringify(data).replace(/"/g, '&quot;')})" 
+                                class="w-full btn-primary text-white py-3 rounded-xl font-medium">
+                            View Response
+                        </button>
+                        
+                        <p id="error-msg" class="text-red-500 text-sm mt-3 text-center hidden">
+                            Incorrect password
+                        </p>
+                    </div>
+                    
+                    <div class="mt-8 text-center">
+                        <button onclick="window.location.href = window.location.pathname" 
+                                class="text-gray-400 hover:text-gray-600 text-sm">
+                            ← Back to home
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderResponseView(container, data) {
+            const positiveAnswers = Object.values(data.answers).filter(a => 
+                ['Yes', 'Yes, definitely', 'Yes, strongly', 'Often', 'Yes, absolutely', 'Yes, I believe so', 'Definitely', 'Somewhat', 'Sometimes', 'Maybe'].includes(a)
+            ).length;
+            
+            const totalAnswered = Object.keys(data.answers).length;
+            
+            container.innerHTML = `
+                <div class="max-w-4xl w-full slide-up pb-12">
+                    <div class="text-center mb-8">
+                        <span class="text-4xl mb-4 block">📜</span>
+                        <h2 class="serif text-3xl md:text-4xl text-gray-800 mb-2">Response from Eyinimofeoluwa</h2>
+                        <p class="text-gray-500 text-sm">${new Date(data.timestamp).toLocaleString()}</p>
+                    </div>
+                    
+                    <div class="glass-card rounded-2xl p-6 mb-8 bg-gradient-to-r from-orange-50 to-purple-50 border-orange-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 uppercase tracking-wider">Response Summary</p>
+                                <p class="text-2xl font-semibold text-gray-800 mt-1">
+                                    ${positiveAnswers} of ${totalAnswered} questions positive
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-3xl font-bold gradient-text">${Math.round((positiveAnswers/totalAnswered)*100)}%</p>
+                                <p class="text-xs text-gray-500">Positive sentiment</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 mb-8">
+                        ${questions.map((q, idx) => data.answers[idx] ? `
+                            <div class="glass-card rounded-xl p-5">
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">${q.section}</p>
+                                <p class="text-sm text-gray-700 mb-2 leading-snug">${q.text}</p>
+                                <p class="font-medium text-gray-900 ${q.type === 'choice' ? 'text-orange-700' : 'text-gray-600 text-sm italic'}">
+                                    "${data.answers[idx]}"
+                                </p>
+                            </div>
+                        ` : '').join('')}
+                    </div>
+                    
+                    <div class="letter-paper rounded-2xl p-8 md:p-12 relative">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-300 to-purple-300 rounded-t-2xl"></div>
+                        
+                        <div class="mb-6">
+                            <span class="text-xs text-gray-400 uppercase tracking-widest">Final Letter</span>
+                            <h3 class="serif text-2xl text-gray-800 mt-2">Her Words to You</h3>
+                        </div>
+                        
+                        <div class="prose prose-lg max-w-none">
+                            <p class="text-gray-700 leading-relaxed whitespace-pre-wrap serif text-lg">
+                                ${data.finalReflection}
+                            </p>
+                        </div>
+                        
+                        <div class="mt-8 pt-8 border-t border-gray-200 flex justify-between items-center">
+                            <span class="text-gray-400 text-sm">${countWords(data.finalReflection)} words</span>
+                            <span class="text-gray-400 text-sm">${new Date(data.timestamp).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 flex gap-4 justify-center">
+                        <button onclick="copyResponse()" class="px-6 py-3 bg-white border border-gray-200 rounded-full text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium">
+                            📋 Copy Response
+                        </button>
+                        <button onclick="window.print()" class="px-6 py-3 bg-white border border-gray-200 rounded-full text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium">
+                            🖨️ Print / Save PDF
+                        </button>
+                    </div>
+                    
+                    <div class="mt-8 text-center">
+                        <button onclick="window.location.href = window.location.pathname" 
+                                class="text-gray-400 hover:text-gray-600 text-sm">
+                            ← Back to home
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Helper Functions
+        function getSectionNumber(sectionName) {
+            const sections = [...new Set(questions.map(q => q.section))];
+            return sections.indexOf(sectionName) + 1;
+        }
+
+        function countWords(text) {
+            if (!text || !text.trim()) return 0;
+            // Split by whitespace and filter out empty strings
+            return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+        }
+
+        // Actions
+        function startQuestions() {
+            state.currentScreen = 'question';
+            render();
+        }
+
+        function selectOption(option) {
+            state.answers[state.currentQuestion] = option;
+            render();
+            setTimeout(() => {
+                if (state.currentQuestion < questions.length - 1) {
+                    nextQuestion();
+                }
+            }, 400);
+        }
+
+        function updateTextAnswer(value) {
+            state.answers[state.currentQuestion] = value;
+            const btn = document.getElementById('next-btn');
+            if (btn) {
+                const hasValue = value.trim().length > 0;
+                btn.disabled = !hasValue;
+                if (hasValue) {
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+        }
+
+        function nextQuestion() {
+            if (state.currentQuestion < questions.length - 1) {
+                state.currentQuestion++;
+                render();
+            } else {
+                state.currentScreen = 'reflection';
+                render();
+            }
+        }
+
+        function previousQuestion() {
+            if (state.currentQuestion > 0) {
+                state.currentQuestion--;
+                render();
+            }
+        }
+
+        function handleReflectionInput(value) {
+            state.finalReflection = value;
+        }
+
+        function submitResponse() {
+            state.currentScreen = 'complete';
+            render();
+        }
+
+        function verifyPasswordAndShow(data) {
+            const input = document.getElementById('view-password');
+            const error = document.getElementById('error-msg');
+            
+            if (input.value === state.viewPassword) {
+                renderResponseView(document.getElementById('app'), data);
+            } else {
+                error.textContent = 'Incorrect password';
+                error.classList.remove('hidden');
+                input.classList.add('border-red-300');
+            }
+        }
+
+        function copyLink(link) {
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Link copied! Send it via WhatsApp, text, or any app.');
+            });
+        }
+
+        function copyResponse() {
+            const text = document.querySelector('.prose p').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Response copied to clipboard!');
+            });
+        }
+
+        // Initialize
+        if (!checkUrl()) {
+            render();
+        }
+    </script>
+</body>
+</html>
